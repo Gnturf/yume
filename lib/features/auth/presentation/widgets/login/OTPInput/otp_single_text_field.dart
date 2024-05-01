@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 enum FocusStatus {
   focused,
@@ -21,14 +22,24 @@ class OTPSingleTextField extends StatefulWidget {
   final FocusNode? nextNode;
 
   @override
-  State<StatefulWidget> createState() {
-    return _OTPSingleTextFieldState();
-  }
+  State<StatefulWidget> createState() => _OTPSingleTextFieldState();
 }
 
 class _OTPSingleTextFieldState extends State<OTPSingleTextField> {
   final _controller = TextEditingController();
-
+  final _otpNumberDimension = TextPainter(
+    text: TextSpan(
+      text: '0',
+      style: TextStyle(
+        fontFamily: GoogleFonts.roboto(
+          fontWeight: FontWeight.w500,
+        ).fontFamily,
+        fontSize: 28,
+        color: const Color.fromRGBO(235, 200, 119, 1),
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
   FocusStatus _focusState = FocusStatus.empty;
 
   @override
@@ -43,75 +54,30 @@ class _OTPSingleTextFieldState extends State<OTPSingleTextField> {
     widget.focusNode.removeListener(focusChangeListener);
   }
 
-  // Listening To TextField focus change
   void focusChangeListener() {
-    // Check current TextField focus status
     bool isFocused = widget.focusNode.hasFocus;
-
-    // If focus, change the "_focusState"
-    if (isFocused) {
-      setState(() {
-        _focusState = FocusStatus.focused;
-      });
-      // If not, set the "_focusState" to wether textField has value or not
-    } else {
-      if (_controller.text.isEmpty) {
-        setState(() {
-          _focusState = FocusStatus.empty;
-        });
-      } else {
-        setState(() {
-          _focusState = FocusStatus.filled;
-        });
-      }
-    }
+    setState(() {
+      _focusState = isFocused
+          ? FocusStatus.focused
+          : (_controller.text.isEmpty ? FocusStatus.empty : FocusStatus.filled);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Used to get the dimension of the
-    final otpNumberDimension = TextPainter(
-      text: TextSpan(
-        text: '0',
-        style: Theme.of(context).textTheme.displayMedium,
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    /*
-      Here we implement binary like system, means that:
-      - If it has value it equals to 1
-      - If it has no value after just deleted it has value of 0
-      - If it deleted again after has no value it was null
-    */
-    bool isLastDigit = false;
-
     return SizedBox(
-      // 8 Was from 4 + 4 on both sides
-      width: otpNumberDimension.width + 8,
+      width: _otpNumberDimension.width + 8,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 6,
-          ),
-          /* This whole KeyboardListener was basicly used for backtracking */
+          const SizedBox(height: 6),
           KeyboardListener(
             focusNode: FocusNode(),
             onKeyEvent: (value) {
-              // Check if a key on keyboard was pressed and if the one that was pressed was backspace
               if (value is KeyDownEvent &&
                   value.logicalKey == LogicalKeyboardKey.backspace) {
-                // Check if the TextField was empty, if it was empty then it will-
-                // just delete it and will not switch to prev TextField
                 if (_controller.text.isEmpty) {
-                  isLastDigit = true;
-                }
-
-                // Because it was already empty, if user press-
-                // the backspace again then it will switch to prev TextField
-                if (isLastDigit) {
                   FocusScope.of(context).requestFocus(widget.prevNode);
                 }
               }
@@ -127,9 +93,7 @@ class _OTPSingleTextFieldState extends State<OTPSingleTextField> {
                 hintText: "",
                 hintStyle: Theme.of(context).textTheme.displayMedium,
               ).copyWith(counterText: ''),
-              /* This onChange was the reverse of KeyboardListener which basicly used for forward-tracking */
               onChanged: (value) {
-                isLastDigit = false;
                 if (value.isNotEmpty) {
                   if (widget.nextNode == null) {
                     widget.focusNode.unfocus();
@@ -139,9 +103,7 @@ class _OTPSingleTextFieldState extends State<OTPSingleTextField> {
               },
             ),
           ),
-          const SizedBox(
-            height: 4,
-          ),
+          const SizedBox(height: 4),
           Container(
             height: 2,
             decoration: BoxDecoration(
