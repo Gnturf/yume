@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yume/features/auth/presentation/screens/signup/signup_password_create.dart';
 import 'package:yume/features/auth/presentation/widgets/display_subtitle_text.dart';
 import 'package:yume/features/auth/presentation/widgets/signup/country_select.dart';
 import 'package:yume/features/welcome/presentation/widgets/icon_text_button.dart';
@@ -46,7 +47,15 @@ class SignupScreen extends StatelessWidget {
             IconTextButton.inverted(
               label: "Verify with Google",
               icon: Icons.abc,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const PasswordCreateScreen();
+                    },
+                  ),
+                );
+              },
             )
           ],
         ),
