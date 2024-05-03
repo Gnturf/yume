@@ -1,10 +1,29 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:yume/features/auth/presentation/widgets/display_subtitle_text.dart';
 import 'package:yume/features/welcome/presentation/widgets/icon_text_button.dart';
 
-class ProfileMakingScreen extends StatelessWidget {
+class ProfileMakingScreen extends StatefulWidget {
   const ProfileMakingScreen({super.key});
+
+  @override
+  State<ProfileMakingScreen> createState() => _ProfileMakingScreenState();
+}
+
+class _ProfileMakingScreenState extends State<ProfileMakingScreen> {
+  File? selectedImage;
+
+  Future<void> _pickImageFromGallery() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      selectedImage = File(returnedImage!.path);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +62,29 @@ class ProfileMakingScreen extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.center,
-              child: Container(
-                width: 116,
-                height: 116,
-                decoration: BoxDecoration(
-                  color: Colors.white30,
-                  borderRadius: BorderRadius.circular(100),
+              child: InkWell(
+                onTap: () {
+                  _pickImageFromGallery();
+                },
+                child: Container(
+                  clipBehavior: Clip.hardEdge,
+                  width: 116,
+                  height: 116,
+                  decoration: BoxDecoration(
+                    color: Colors.white30,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: selectedImage != null
+                      ? Image.file(
+                          selectedImage!,
+                          fit: BoxFit.cover,
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Pick Your Image"),
+                          ],
+                        ),
                 ),
               ),
             ),
