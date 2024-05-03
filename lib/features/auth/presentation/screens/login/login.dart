@@ -39,20 +39,20 @@ class LoginScreen extends StatelessWidget {
               subtitleText: "How do you want to proceed?",
             ),
             const Spacer(),
-            IconTextButton(
-              label: "Proceed with Phone Number",
-              icon: Icons.phone,
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPhoneNumberScreen(),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
+            // IconTextButton(
+            //   label: "Proceed with Phone Number",
+            //   icon: Icons.phone,
+            //   onPressed: () {
+            //     Navigator.of(context).push(
+            //       MaterialPageRoute(
+            //         builder: (context) => const LoginPhoneNumberScreen(),
+            //       ),
+            //     );
+            //   },
+            // ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
             IconTextButton.inverted(
               label: "Proceed with Google",
               icon: Icons.abc,
